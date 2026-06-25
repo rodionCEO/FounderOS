@@ -1,0 +1,64 @@
+/* FounderOS — design tokens (dark theme) */
+:root {
+  /* Surfaces */
+  --bg: #0f1115;
+  --bg-elevated: #161a21;
+  --surface: #1b2029;
+  --surface-hover: #222834;
+  --surface-active: #2a3140;
+  --border: #2a313d;
+  --border-strong: #3a4350;
+
+  /* Text */
+  --text: #e7ebf2;
+  --text-muted: #9aa4b2;
+  --text-faint: #6b7585;
+
+  /* Accent */
+  --accent: #6c8cff;
+  --accent-hover: #5a7dff;
+  --accent-soft: rgba(108, 140, 255, 0.14);
+
+  /* Semantic */
+  --high: #ff6b5e;       /* high importance / overdue */
+  --high-soft: rgba(255, 107, 94, 0.14);
+  --mid: #ffb454;        /* medium importance */
+  --mid-soft: rgba(255, 180, 84, 0.14);
+  --low: #7c8aa0;        /* low importance */
+  --low-soft: rgba(124, 138, 160, 0.14);
+  --success: #4ec98a;
+  --success-soft: rgba(78, 201, 138, 0.14);
+  --danger: #ff5d5d;
+
+  /* Layout */
+  --radius-sm: 6px;
+  --radius: 10px;
+  --radius-lg: 14px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+
+  /* Shadow */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.45);
+
+  /* Typography */
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --fs-xs: 11px;
+  --fs-sm: 12px;
+  --fs-md: 13px;
+  --fs-lg: 15px;
+  --fs-xl: 18px;
+
+  /* Motion */
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --dur: 160ms;
+
+  /* Popup sizing */
+  --popup-w: 400px;
+  --popup-h: 600px;
+}

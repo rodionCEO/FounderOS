@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FounderOS</title>
+  <link rel="stylesheet" href="src/css/variables.css" />
+  <link rel="stylesheet" href="src/css/base.css" />
+  <link rel="stylesheet" href="src/css/components.css" />
+</head>
+<body>
+  <div id="app" class="app">
+    <!-- Top bar -->
+    <header class="topbar">
+      <div class="topbar__brand">
+        <span class="topbar__logo" id="brandLogo"></span>
+        <span class="topbar__name">FounderOS</span>
+      </div>
+      <div class="topbar__search">
+        <span class="topbar__search-icon" id="searchIcon"></span>
+        <input type="text" id="globalSearch" class="topbar__search-input"
+               data-i18n-placeholder="search.placeholder" autocomplete="off" />
+      </div>
+      <div class="topbar__actions">
+        <button class="icon-btn" id="quickCaptureBtn" data-i18n-title="quick.title" type="button"></button>
+        <button class="icon-btn" id="expandBtn" data-i18n-title="app.expand" type="button"></button>
+        <button class="icon-btn" id="settingsBtn" data-i18n-title="settings.title" type="button"></button>
+        <button class="lang-btn" id="langBtn" type="button">EN</button>
+      </div>
+    </header>
+
+    <!-- Section navigation -->
+    <nav class="tabs" id="tabs"></nav>
+
+    <!-- Search results overlay -->
+    <section id="searchResults" class="search-results" hidden></section>
+
+    <!-- Main content -->
+    <main id="view" class="view"></main>
+  </div>
+
+  <!-- Modal root (Quick Capture, task editor, etc.) -->
+  <div id="modalRoot"></div>
+
+  <script type="module" src="src/js/main.js"></script>
+</body>
+</html>
