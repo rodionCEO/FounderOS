@@ -17,6 +17,7 @@ export default {
   'tab.notes': 'Заметки',
   'tab.links': 'Ссылки',
   'tab.journal': 'Дневник',
+  'tab.completed': 'Выполненные',
   'tab.archive': 'Архив',
 
   // Common actions
@@ -32,6 +33,7 @@ export default {
   'action.unpin': 'Открепить',
   'action.open': 'Открыть',
   'action.deleteForever': 'Удалить навсегда',
+  'action.uncomplete': 'Вернуть в активные',
 
   // Dashboard
   'dash.focus': 'Фокус дня',
@@ -72,6 +74,7 @@ export default {
   'tasks.groupEmpty': 'Пусто',
   'tasks.focusLimit': 'В фокусе может быть до 3 задач',
   'tasks.due': 'до',
+  'tasks.done': 'Задача выполнена',
 
   // Ideas
   'ideas.new': 'Новая идея',
@@ -107,6 +110,9 @@ export default {
   'links.emptyHint': 'Сохраняйте инструменты и ресурсы',
   'links.pinned': 'Закреплённые ссылки',
   'links.all': 'Все ссылки',
+  'links.addCurrent': 'Добавить эту страницу',
+  'links.addCurrentHint': 'Сохранить страницу, на которой вы сейчас, в один клик',
+  'links.added': 'Страница добавлена в Ссылки',
 
   // Journal
   'journal.today': 'Сегодня',
@@ -125,6 +131,16 @@ export default {
   'journal.recent': 'Недавние записи',
   'journal.noRecent': 'Пока нет записей',
   'journal.draftRestored': 'Черновик восстановлен',
+
+  // Completed
+  'completed.title': 'Выполненные задачи',
+  'completed.clear': 'Очистить выполненные',
+  'completed.clearConfirm': 'Перенести все выполненные задачи в Архив?',
+  'completed.empty': 'Пока ничего не выполнено',
+  'completed.emptyHint': 'Выполненные задачи появятся здесь, сгруппированные по дням',
+  'completed.today': 'Сегодня',
+  'completed.yesterday': 'Вчера',
+  'completed.doneAt': 'выполнено',
 
   // Archive
   'archive.empty': 'Архив пуст',
@@ -153,6 +169,14 @@ export default {
   'settings.importError': 'Не удалось импортировать файл',
   'settings.exported': 'Данные экспортированы',
   'settings.archiveCleared': 'Архив очищен',
+  // Voice
+  'voice.title': 'Голосовой ввод',
+  'voice.enable': 'Включить микрофон',
+  'voice.enabled': 'Микрофон включён',
+  'voice.needPermission':
+    'Разрешите доступ к микрофону. Откройте FounderOS в полной вкладке (⤢) и нажмите «Включить микрофон» здесь, в Настройках.',
+  'voice.denied': 'Доступ к микрофону отклонён',
+
   'settings.about': 'О приложении',
   'settings.aboutText': '100% локально · Без трекинга · Без облака',
   'settings.shortcuts': 'Горячие клавиши',

@@ -58,15 +58,28 @@ export default function render(container) {
 
   container.innerHTML = `
     <div class="view-head" style="display:flex;gap:8px;margin-bottom:12px">
-      <button class="btn btn--sm" id="currentTab">${icon('open', { size: 14 })} ${t('links.currentTab')}</button>
+      <button class="btn btn--sm" id="currentTab" title="${t('links.addCurrentHint')}">${icon('plus', { size: 14 })} ${t('links.addCurrent')}</button>
       <button class="btn btn--primary btn--sm" id="newLink" style="margin-left:auto">${icon('plus', { size: 14 })} ${t('links.new')}</button>
     </div>
     ${body}`;
 
   container.querySelector('#newLink').addEventListener('click', () => openEditor(null, container));
+  // One-click: grab the page the user is currently on and save it straight away.
   container.querySelector('#currentTab').addEventListener('click', async () => {
     const tab = await getActiveTab();
-    openEditor(tab ? { url: tab.url, title: tab.title, desc: '' } : null, container, true);
+    if (!tab || !tab.url) {
+      // Fallback: no readable tab — open the manual editor instead.
+      openEditor(null, container, true);
+      return;
+    }
+    const url = normalizeUrl(tab.url);
+    await store.add('links', {
+      url,
+      title: (tab.title || '').trim() || hostname(url),
+      desc: '',
+      pinned: false,
+    });
+    toast(t('links.added'));
   });
 
   container.querySelectorAll('.card[data-id]').forEach((card) => {

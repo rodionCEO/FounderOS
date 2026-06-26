@@ -19,8 +19,10 @@ let filter = 'all';
 /** Gather all archived items across collections, tagged with their type. */
 function archivedItems() {
   const out = [];
+  // Only truly archived tasks belong here. Completed-but-not-archived tasks live
+  // in the dedicated Completed view until the user clears them into the Archive.
   store.all('tasks').forEach((x) => {
-    if (x.archived || x.done) out.push({ type: 'tasks', item: x, when: x.completedAt || x.createdAt });
+    if (x.archived) out.push({ type: 'tasks', item: x, when: x.completedAt || x.createdAt });
   });
   ['ideas', 'notes', 'links'].forEach((c) =>
     store.all(c).forEach((x) => {

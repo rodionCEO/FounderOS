@@ -17,6 +17,7 @@ export default {
   'tab.notes': 'Notes',
   'tab.links': 'Links',
   'tab.journal': 'Journal',
+  'tab.completed': 'Completed',
   'tab.archive': 'Archive',
 
   // Common actions
@@ -32,6 +33,7 @@ export default {
   'action.unpin': 'Unpin',
   'action.open': 'Open',
   'action.deleteForever': 'Delete forever',
+  'action.uncomplete': 'Move back to active',
 
   // Dashboard
   'dash.focus': "Today's Focus",
@@ -72,6 +74,7 @@ export default {
   'tasks.groupEmpty': 'Nothing here',
   'tasks.focusLimit': 'You can focus on up to 3 tasks',
   'tasks.due': 'due',
+  'tasks.done': 'Task completed',
 
   // Ideas
   'ideas.new': 'New idea',
@@ -107,6 +110,9 @@ export default {
   'links.emptyHint': 'Save the tools and resources you use',
   'links.pinned': 'Pinned Links',
   'links.all': 'All Links',
+  'links.addCurrent': 'Add this page',
+  'links.addCurrentHint': 'Save the page you are currently on in one click',
+  'links.added': 'Page added to Links',
 
   // Journal
   'journal.today': 'Today',
@@ -125,6 +131,16 @@ export default {
   'journal.recent': 'Recent entries',
   'journal.noRecent': 'No entries yet',
   'journal.draftRestored': 'Draft restored',
+
+  // Completed
+  'completed.title': 'Completed tasks',
+  'completed.clear': 'Clear completed',
+  'completed.clearConfirm': 'Move all completed tasks to the Archive?',
+  'completed.empty': 'Nothing completed yet',
+  'completed.emptyHint': 'Finished tasks will appear here, grouped by day',
+  'completed.today': 'Today',
+  'completed.yesterday': 'Yesterday',
+  'completed.doneAt': 'done',
 
   // Archive
   'archive.empty': 'Archive is empty',
@@ -153,6 +169,14 @@ export default {
   'settings.importError': 'Could not import file',
   'settings.exported': 'Data exported',
   'settings.archiveCleared': 'Archive cleared',
+  // Voice
+  'voice.title': 'Voice input',
+  'voice.enable': 'Enable microphone',
+  'voice.enabled': 'Microphone enabled',
+  'voice.needPermission':
+    'Allow microphone access. Open FounderOS in a full tab (⤢) and click Enable microphone here in Settings.',
+  'voice.denied': 'Microphone access denied',
+
   'settings.about': 'About',
   'settings.aboutText': '100% local · No tracking · No cloud',
   'settings.shortcuts': 'Keyboard shortcuts',

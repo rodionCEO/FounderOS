@@ -11,12 +11,19 @@ html,
 body {
   width: var(--popup-w);
   height: var(--popup-h);
-  background: var(--bg);
   color: var(--text);
   font-family: var(--font);
   font-size: var(--fs-md);
   line-height: 1.45;
   -webkit-font-smoothing: antialiased;
+}
+
+/* Deep backdrop with soft violet/blue neon glow in the corners */
+body {
+  background-color: var(--bg);
+  background-image: radial-gradient(120% 80% at 0% 0%, var(--bg-glow-1), transparent 55%),
+    radial-gradient(120% 90% at 100% 100%, var(--bg-glow-2), transparent 55%);
+  background-attachment: fixed;
 }
 
 /* Full-tab mode: the page is opened in a browser tab, not a popup */
@@ -86,8 +93,12 @@ a:hover {
   gap: var(--space-3);
   padding: var(--space-3) var(--space-4);
   background: var(--bg-elevated);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;
+  position: relative;
+  z-index: 10;
 }
 
 .topbar__brand {
@@ -100,11 +111,16 @@ a:hover {
   width: 22px;
   height: 22px;
   color: var(--accent);
+  filter: drop-shadow(0 0 6px rgba(124, 124, 255, 0.6));
 }
 .topbar__name {
   font-weight: 700;
   font-size: var(--fs-lg);
   letter-spacing: -0.2px;
+  background: var(--accent-grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 body.fullpage .topbar__name::after {
   content: "";
@@ -135,8 +151,9 @@ body.fullpage .topbar__name::after {
   transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease);
 }
 .topbar__search-input:focus {
-  border-color: var(--accent);
-  background: var(--bg);
+  border-color: transparent;
+  background: var(--surface-hover);
+  box-shadow: var(--glow-sm);
 }
 
 .topbar__actions {
@@ -151,10 +168,14 @@ body.fullpage .topbar__name::after {
   gap: 2px;
   padding: var(--space-2) var(--space-3);
   background: var(--bg-elevated);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
   border-bottom: 1px solid var(--border);
   overflow-x: auto;
   flex-shrink: 0;
   scrollbar-width: none;
+  position: relative;
+  z-index: 9;
 }
 .tabs::-webkit-scrollbar {
   display: none;
@@ -166,18 +187,28 @@ body.fullpage .topbar__name::after {
   gap: 6px;
   padding: 6px 10px;
   border-radius: var(--radius-sm);
+  border: 1px solid transparent;
   color: var(--text-muted);
   font-size: var(--fs-sm);
   font-weight: 600;
   white-space: nowrap;
-  transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
+  transition: background var(--dur) var(--ease), color var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease), transform var(--dur-fast) var(--ease);
 }
 .tab:hover {
   background: var(--surface-hover);
   color: var(--text);
 }
+.tab:active {
+  transform: translateY(1px);
+}
 .tab.active {
-  background: var(--accent-soft);
+  background-image: var(--accent-grad-soft);
+  border-color: rgba(124, 124, 255, 0.4);
+  color: #fff;
+  box-shadow: var(--glow-sm);
+}
+.tab.active .tab__icon {
   color: var(--accent);
 }
 .tab__icon {

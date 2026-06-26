@@ -127,15 +127,25 @@ function wireCardActions(container) {
         e.stopPropagation();
         const action = btn.dataset.action;
         if (action === 'complete') {
-          await store.completeTask(id);
-          toast(t('app.archived'));
+          // Play the completion flourish, then move the task to the Completed view.
+          card.classList.add('card--completing');
+          setTimeout(async () => {
+            await store.completeTask(id);
+            toast(t('tasks.done'));
+          }, 280);
         } else if (action === 'edit') {
           openEditor(store.all('tasks').find((x) => x.id === id), container);
         } else if (action === 'archive') {
-          await store.archive('tasks', id);
-          toast(t('app.archived'));
+          card.classList.add('card--removing');
+          setTimeout(async () => {
+            await store.archive('tasks', id);
+            toast(t('app.archived'));
+          }, 220);
         } else if (action === 'delete') {
-          if (await confirmDialog(t('common.confirmDelete'))) await store.remove('tasks', id);
+          if (await confirmDialog(t('common.confirmDelete'))) {
+            card.classList.add('card--removing');
+            setTimeout(() => store.remove('tasks', id), 220);
+          }
         } else if (action === 'focus') {
           const res = await store.toggleFocus(id);
           if (res && res.error === 'focusLimit') toast(t('tasks.focusLimit'));

@@ -1,39 +1,54 @@
-/* FounderOS — design tokens (dark theme) */
+/* FounderOS — design tokens (Neon Glass theme) */
 :root {
-  /* Surfaces */
-  --bg: #0f1115;
-  --bg-elevated: #161a21;
-  --surface: #1b2029;
-  --surface-hover: #222834;
-  --surface-active: #2a3140;
-  --border: #2a313d;
-  --border-strong: #3a4350;
+  /* Surfaces — translucent glass over a deep, glowing backdrop */
+  --bg: #0a0a14;
+  --bg-glow-1: rgba(139, 92, 246, 0.20); /* violet glow (top-left) */
+  --bg-glow-2: rgba(59, 130, 246, 0.18); /* blue glow (bottom-right) */
+  --bg-elevated: rgba(18, 18, 30, 0.72); /* glass chrome (topbar/tabs) */
+  --surface: rgba(255, 255, 255, 0.045);
+  --surface-hover: rgba(255, 255, 255, 0.08);
+  --surface-active: rgba(255, 255, 255, 0.12);
+  --border: rgba(255, 255, 255, 0.09);
+  --border-strong: rgba(255, 255, 255, 0.2);
+
+  /* Glass effect */
+  --glass-blur: blur(16px) saturate(140%);
 
   /* Text */
-  --text: #e7ebf2;
-  --text-muted: #9aa4b2;
-  --text-faint: #6b7585;
+  --text: #eceef6;
+  --text-muted: #a2a8bc;
+  --text-faint: #6e7488;
 
-  /* Accent */
-  --accent: #6c8cff;
-  --accent-hover: #5a7dff;
-  --accent-soft: rgba(108, 140, 255, 0.14);
+  /* Accent — violet→indigo→blue gradient family */
+  --accent: #8b8cff;
+  --accent-hover: #a3a4ff;
+  --accent-soft: rgba(124, 124, 255, 0.16);
+  --accent-grad: linear-gradient(135deg, #8b5cf6 0%, #6366f1 50%, #3b82f6 100%);
+  --accent-grad-soft: linear-gradient(
+    135deg,
+    rgba(139, 92, 246, 0.18),
+    rgba(59, 130, 246, 0.18)
+  );
+
+  /* Neon glow */
+  --glow: 0 0 18px rgba(124, 124, 255, 0.45);
+  --glow-sm: 0 0 12px rgba(124, 124, 255, 0.3);
 
   /* Semantic */
-  --high: #ff6b5e;       /* high importance / overdue */
-  --high-soft: rgba(255, 107, 94, 0.14);
-  --mid: #ffb454;        /* medium importance */
-  --mid-soft: rgba(255, 180, 84, 0.14);
-  --low: #7c8aa0;        /* low importance */
-  --low-soft: rgba(124, 138, 160, 0.14);
-  --success: #4ec98a;
-  --success-soft: rgba(78, 201, 138, 0.14);
-  --danger: #ff5d5d;
+  --high: #ff6b6e; /* high importance / overdue */
+  --high-soft: rgba(255, 107, 110, 0.16);
+  --mid: #ffb454; /* medium importance */
+  --mid-soft: rgba(255, 180, 84, 0.16);
+  --low: #8a93a8; /* low importance */
+  --low-soft: rgba(138, 147, 168, 0.16);
+  --success: #46e0a0;
+  --success-soft: rgba(70, 224, 160, 0.16);
+  --danger: #ff5d6c;
 
   /* Layout */
-  --radius-sm: 6px;
-  --radius: 10px;
-  --radius-lg: 14px;
+  --radius-sm: 7px;
+  --radius: 11px;
+  --radius-lg: 16px;
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
@@ -42,9 +57,9 @@
   --space-6: 24px;
 
   /* Shadow */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-  --shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
-  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.45);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 24px 60px rgba(0, 0, 0, 0.6);
 
   /* Typography */
   --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -56,7 +71,10 @@
 
   /* Motion */
   --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
-  --dur: 160ms;
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --dur-fast: 110ms;
+  --dur: 180ms;
+  --dur-slow: 300ms;
 
   /* Popup sizing */
   --popup-w: 400px;

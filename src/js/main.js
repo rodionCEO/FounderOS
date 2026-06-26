@@ -13,6 +13,7 @@ import renderIdeas from './views/ideas.js';
 import renderNotes from './views/notes.js';
 import renderLinks from './views/links.js';
 import renderJournal from './views/journal.js';
+import renderCompleted from './views/completed.js';
 import renderArchive from './views/archive.js';
 import renderSettings from './views/settings.js';
 
@@ -27,6 +28,7 @@ const VIEWS = {
   notes: { icon: 'note', label: 'tab.notes', render: renderNotes, tab: true },
   links: { icon: 'link', label: 'tab.links', render: renderLinks, tab: true },
   journal: { icon: 'journal', label: 'tab.journal', render: renderJournal, tab: true },
+  completed: { icon: 'checkCircle', label: 'tab.completed', render: renderCompleted, tab: true },
   archive: { icon: 'archive', label: 'tab.archive', render: renderArchive, tab: true },
   settings: { icon: 'settings', label: 'settings.title', render: renderSettings, tab: false },
 };

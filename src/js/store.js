@@ -127,13 +127,30 @@ export async function togglePin(collection, id) {
 }
 
 /* ---------- Task-specific ---------- */
+/**
+ * Mark a task as done. It stays in the tasks collection (NOT archived) so it
+ * shows up in the dedicated "Completed" view, grouped by completion date.
+ * It disappears from the active Tasks view automatically (which filters !done).
+ */
 export async function completeTask(id) {
   return update('tasks', id, {
     done: true,
     focus: false,
     completedAt: Date.now(),
-    archived: true,
   });
+}
+
+/** Re-open a completed task: send it back to the active list. */
+export async function uncompleteTask(id) {
+  return update('tasks', id, { done: false, completedAt: null });
+}
+
+/** Move all completed (done, not yet archived) tasks into the Archive. */
+export async function archiveCompleted() {
+  state.tasks.forEach((t) => {
+    if (t.done && !t.archived) t.archived = true;
+  });
+  await persist();
 }
 
 export async function toggleFocus(id) {

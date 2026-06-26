@@ -1,0 +1,153 @@
+/* FounderOS — motion: a tasteful animation for every action.
+   All of this is disabled under prefers-reduced-motion (see bottom). */
+
+/* View cross-fade (applied by the router on every navigation) */
+@keyframes viewIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.995);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.view.fade-in {
+  animation: viewIn var(--dur-slow) var(--ease);
+}
+
+/* Staggered card entrance — gentle so frequent re-renders stay calm */
+@keyframes cardIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.view.fade-in .card,
+.view.fade-in .widget {
+  animation: cardIn var(--dur-slow) var(--ease) both;
+}
+.view.fade-in .card:nth-child(1),
+.view.fade-in .widget:nth-child(1) { animation-delay: 0ms; }
+.view.fade-in .card:nth-child(2),
+.view.fade-in .widget:nth-child(2) { animation-delay: 30ms; }
+.view.fade-in .card:nth-child(3),
+.view.fade-in .widget:nth-child(3) { animation-delay: 60ms; }
+.view.fade-in .card:nth-child(4),
+.view.fade-in .widget:nth-child(4) { animation-delay: 90ms; }
+.view.fade-in .card:nth-child(5) { animation-delay: 120ms; }
+.view.fade-in .card:nth-child(6) { animation-delay: 150ms; }
+.view.fade-in .card:nth-child(n + 7) { animation-delay: 180ms; }
+
+/* Completing a task — slides off with a satisfying flourish */
+@keyframes cardComplete {
+  0% {
+    opacity: 1;
+    transform: none;
+  }
+  35% {
+    transform: scale(1.02);
+    box-shadow: 0 0 22px rgba(70, 224, 160, 0.55);
+    border-color: var(--success);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(60px) scale(0.92);
+  }
+}
+.card--completing {
+  animation: cardComplete 300ms var(--ease) forwards !important;
+  pointer-events: none;
+}
+
+/* Deleting an item — collapses away */
+@keyframes cardRemove {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-32px) scale(0.92);
+  }
+}
+.card--removing {
+  animation: cardRemove 240ms var(--ease) forwards !important;
+  pointer-events: none;
+}
+
+/* Pin / focus toggle — a little neon pop */
+@keyframes starPop {
+  0% { transform: scale(1); }
+  45% { transform: scale(1.35); filter: drop-shadow(0 0 8px rgba(124, 124, 255, 0.8)); }
+  100% { transform: scale(1); }
+}
+.icon-btn--pop svg {
+  animation: starPop 360ms var(--ease-spring);
+}
+
+/* Modal entrance */
+@keyframes modalIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Toast entrance */
+@keyframes toastIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 16px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+
+/* Recording mic — pulsing neon ring */
+@keyframes micPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 107, 110, 0.5);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(255, 107, 110, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 107, 110, 0);
+  }
+}
+
+/* Buttons: lively press + hover lift */
+.btn,
+.icon-btn,
+.chip,
+.type-switch__btn,
+.tab {
+  will-change: transform;
+}
+.btn:active,
+.icon-btn:active {
+  transform: translateY(1px) scale(0.97);
+}
+
+/* Respect the user's motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

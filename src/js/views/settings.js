@@ -3,6 +3,7 @@ import * as store from '../store.js';
 import { t, getLang, setLang } from '../i18n.js';
 import { icon } from '../icons.js';
 import { toast, confirmDialog } from '../ui.js';
+import { voiceSupported, requestMicPermission } from '../voice.js';
 
 const SHORTCUTS = [
   ['T', 'sc.newTask'],
@@ -35,6 +36,17 @@ export default function render(container) {
         <button class="radio-pill${lang === 'ru' ? ' active' : ''}" data-lang="ru">Русский</button>
       </div>
     </div>
+
+    ${
+      voiceSupported()
+        ? `<!-- Voice -->
+    <div class="settings-section">
+      <div class="settings-section__title">${t('voice.title')}</div>
+      <button class="btn btn--block" id="micBtn">${icon('mic', { size: 15 })} ${t('voice.enable')}</button>
+      <div class="about-meta" style="margin-top:8px">${t('voice.needPermission')}</div>
+    </div>`
+        : ''
+    }
 
     <!-- Data -->
     <div class="settings-section">
@@ -80,6 +92,15 @@ export default function render(container) {
       setLang(next);
     })
   );
+
+  // Voice — request microphone permission for the extension origin
+  const micBtn = container.querySelector('#micBtn');
+  if (micBtn) {
+    micBtn.addEventListener('click', async () => {
+      const ok = await requestMicPermission();
+      toast(ok ? t('voice.enabled') : t('voice.denied'));
+    });
+  }
 
   // Export
   container.querySelector('#exportBtn').addEventListener('click', () => {

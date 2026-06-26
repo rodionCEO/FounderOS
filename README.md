@@ -7,7 +7,7 @@
 Tasks, ideas, notes, links and a daily journal — all in one fast, distraction-free Chrome extension.
 **100% local. No accounts. No tracking. No cloud.**
 
-![Manifest V3](https://img.shields.io/badge/Manifest-V3-6c8cff)
+![Manifest V3](https://img.shields.io/badge/Manifest-V3-7C7CFF)
 ![License: MIT](https://img.shields.io/badge/License-MIT-4ec98a)
 ![No Build Step](https://img.shields.io/badge/Build-none-9aa4b2)
 ![Privacy First](https://img.shields.io/badge/Privacy-Local%20First-ff6b5e)
@@ -30,15 +30,16 @@ Founders juggle a hundred things a day. Most productivity apps are heavy, cloud-
 - 📋 **Tasks** — deadlines, importance levels, automatic time grouping (Overdue / Today / Tomorrow / Later), filters and **drag & drop** reordering.
 - 💡 **Ideas** — capture ideas, pin the best ones to a dedicated block on top.
 - 📝 **Notes** — rich plain-text notes with pin, search and **draft autosave**.
-- 🔗 **Links** — your personal resource library, with **“Add current tab”** in one click and a pinned block.
+- 🔗 **Links** — your personal resource library. Save **the page you're on in one click**, plus a pinned block.
 - 📔 **Daily Journal** — main goal of the day, auto-pulled list of tasks you completed, and reflection prompts; navigate any day.
-- 📦 **Archive** — completed tasks and archived items in one place, restore or delete.
+- ✅ **Completed** — a dedicated log of finished tasks, **grouped by the day they were done**, with one-click clear-to-archive. Active tasks stay clean.
+- 📦 **Archive** — archived items in one place, restore or delete.
 - 🔍 **Global Search** — search across tasks, ideas, notes, links and journal at once.
 - ⚡ **Quick Capture** — a `+` button (and keyboard shortcuts) to add anything in seconds.
 - 🎙️ **Voice Input** — optional dictation via the free, browser-native Web Speech API.
 - 🌐 **Language Switching** — English & Русский, instant toggle, remembered.
 - 💾 **Import / Export** — back up or move all your data as JSON.
-- 🌙 **Polished dark UI** — SVG icons, smooth animations, thoughtful empty states.
+- 🌌 **Neon Glass UI** — frosted-glass panels, a violet→blue gradient accent, and a tasteful animation for every action (respects reduced-motion).
 
 ---
 
@@ -46,13 +47,11 @@ Founders juggle a hundred things a day. Most productivity apps are heavy, cloud-
 
 | Dashboard | Tasks |
 | --- | --- |
-| ![Dashboard](screenshots/dashboard.png) | ![Tasks](screenshots/tasks.png) |
+| ![Dashboard](screenshots/dashboard.svg) | ![Tasks](screenshots/tasks.svg) |
 
-| Journal | Notes |
+| Journal | Completed |
 | --- | --- |
-| ![Journal](screenshots/journal.png) | ![Notes](screenshots/notes.png) |
-
-> Screenshots are placeholders until you capture your own — see [`screenshots/`](screenshots/).
+| ![Journal](screenshots/journal.svg) | ![Completed](screenshots/completed.svg) |
 
 ---
 
@@ -78,8 +77,9 @@ FounderOS installs in under a minute and needs **no build step, no npm, no accou
 - **Reorder tasks** — drag the handle on the left of a task card.
 - **Capture an idea** — press `I` or use the `+` button. Pin great ideas to keep them on top.
 - **Take notes** — press `N`. Your text autosaves as a draft every couple of seconds, so nothing is lost.
-- **Save a link** — press `L`, or in Links click **Current tab** to grab the page you’re on.
+- **Save a link** — press `L`, or in Links click **Add this page** to save the tab you’re on in one click.
 - **Journal** — press the Journal tab, write your day. Tasks you completed that day appear automatically.
+- **Completed** — open the Completed tab to see finished tasks grouped by day; **Clear completed** sweeps them into the Archive.
 - **Search** — press `/` and type; results are grouped by type.
 - **Switch language** — use the `EN`/`RU` toggle in the top-right corner.
 - **Voice input** — tap the 🎤 next to a field (shown only if your browser supports it).
