@@ -89,10 +89,10 @@ FounderOS installs in under a minute and needs **no build step, no npm, no accou
 
 | Key | Action |
 | --- | --- |
-| `T` | New task |
-| `I` | New idea |
-| `N` | New note |
-| `L` | New link |
+| `t` | New task |
+| `i` | New idea |
+| `n` | New note |
+| `l` | New link |
 | `/` | Focus search |
 | `Esc` | Close dialog |
 

@@ -6,10 +6,10 @@ import { toast, confirmDialog } from '../ui.js';
 import { voiceSupported, requestMicPermission } from '../voice.js';
 
 const SHORTCUTS = [
-  ['T', 'sc.newTask'],
-  ['I', 'sc.newIdea'],
-  ['N', 'sc.newNote'],
-  ['L', 'sc.newLink'],
+  ['t', 'sc.newTask'],
+  ['i', 'sc.newIdea'],
+  ['n', 'sc.newNote'],
+  ['l', 'sc.newLink'],
   ['/', 'sc.search'],
   ['Esc', 'sc.close'],
 ];
