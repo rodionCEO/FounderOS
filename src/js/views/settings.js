@@ -4,6 +4,14 @@ import { t, getLang, setLang } from '../i18n.js';
 import { icon } from '../icons.js';
 import { toast, confirmDialog } from '../ui.js';
 import { voiceSupported, requestMicPermission } from '../voice.js';
+import { applyPopupSize } from '../layout.js';
+
+const SIZE_OPTS = [
+  ['sm', 'size.sm'],
+  ['md', 'size.md'],
+  ['lg', 'size.lg'],
+  ['xl', 'size.xl'],
+];
 
 const SHORTCUTS = [
   ['t', 'sc.newTask'],
@@ -17,6 +25,8 @@ const SHORTCUTS = [
 export default function render(container) {
   const lang = getLang();
   const s = store.stats();
+  const size = store.getSetting('popupSize') || 'md';
+  const windowMode = ['full', 'side'].includes(new URLSearchParams(location.search).get('view'));
 
   const statRows = [
     ['stats.totalTasks', s.totalTasks],
@@ -36,6 +46,22 @@ export default function render(container) {
         <button class="radio-pill${lang === 'ru' ? ' active' : ''}" data-lang="ru">Русский</button>
       </div>
     </div>
+
+    ${
+      windowMode
+        ? ''
+        : `<!-- Popup size -->
+    <div class="settings-section">
+      <div class="settings-section__title">${t('size.title')}</div>
+      <div class="radio-row">
+        ${SIZE_OPTS.map(
+          ([key, label]) =>
+            `<button class="radio-pill${size === key ? ' active' : ''}" data-size="${key}">${t(label)}</button>`
+        ).join('')}
+      </div>
+      <div class="about-meta" style="margin-top:8px">${t('size.hint')}</div>
+    </div>`
+    }
 
     ${
       voiceSupported()
@@ -90,6 +116,15 @@ export default function render(container) {
       if (next === getLang()) return;
       await store.setSetting('lang', next);
       setLang(next);
+    })
+  );
+
+  // Popup size presets
+  container.querySelectorAll('[data-size]').forEach((btn) =>
+    btn.addEventListener('click', async () => {
+      const next = btn.dataset.size;
+      applyPopupSize(next);
+      await store.setSetting('popupSize', next);
     })
   );
 

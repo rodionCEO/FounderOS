@@ -17,5 +17,11 @@
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
   },
-  "permissions": ["storage", "tabs"]
+  "background": {
+    "service_worker": "src/background.js"
+  },
+  "side_panel": {
+    "default_path": "popup.html?view=side"
+  },
+  "permissions": ["storage", "tabs", "sidePanel"]
 }

@@ -20,6 +20,7 @@ import renderSettings from './views/settings.js';
 import { openQuickCapture } from './quickCapture.js';
 import { initSearch } from './search.js';
 import { initShortcuts } from './shortcuts.js';
+import { applyPopupSize } from './layout.js';
 
 const VIEWS = {
   dashboard: { icon: 'dashboard', label: 'tab.dashboard', render: renderDashboard, tab: true },
@@ -76,17 +77,32 @@ function renderHeaderIcons() {
   document.getElementById('brandLogo').innerHTML = icon('logo', { size: 22 });
   document.getElementById('searchIcon').innerHTML = icon('search', { size: 14 });
   document.getElementById('quickCaptureBtn').innerHTML = icon('plus');
+  document.getElementById('dockBtn').innerHTML = icon('sidebar');
   document.getElementById('expandBtn').innerHTML = icon('expand');
   document.getElementById('settingsBtn').innerHTML = icon('settings');
   document.getElementById('langBtn').textContent = getLang().toUpperCase();
 }
 
-/** Hide the expand button when already running in a full tab. */
-function setupFullpageMode() {
+/** Adapt the chrome depending on how the page is being shown. */
+function setupViewMode() {
   const params = new URLSearchParams(location.search);
-  if (params.get('view') === 'full') {
+  const mode = params.get('view');
+  const dockBtn = document.getElementById('dockBtn');
+
+  if (mode === 'full') {
     document.body.classList.add('fullpage');
     document.getElementById('expandBtn').style.display = 'none';
+  } else if (mode === 'side') {
+    // Side panel: fill its container; the user resizes width by dragging it.
+    document.documentElement.classList.add('sidepanel');
+    document.body.classList.add('sidepanel');
+    dockBtn.style.display = 'none';
+    document.getElementById('expandBtn').style.display = 'none';
+  }
+
+  // Hide the dock button if the Side Panel API is unavailable (older Chrome).
+  if (mode !== 'side' && !(chrome.sidePanel && chrome.windows)) {
+    dockBtn.style.display = 'none';
   }
 }
 
@@ -97,6 +113,16 @@ function wireHeader() {
   document.getElementById('settingsBtn').addEventListener('click', () => navigate('settings'));
   document.getElementById('expandBtn').addEventListener('click', () => {
     chrome.tabs.create({ url: chrome.runtime.getURL('popup.html?view=full') });
+  });
+  document.getElementById('dockBtn').addEventListener('click', async () => {
+    try {
+      const win = await chrome.windows.getCurrent();
+      await chrome.sidePanel.open({ windowId: win.id });
+      window.close(); // dismiss the popup; the side panel takes over
+    } catch {
+      // Side panel unavailable — fall back to a full tab.
+      chrome.tabs.create({ url: chrome.runtime.getURL('popup.html?view=full') });
+    }
   });
   document.getElementById('langBtn').addEventListener('click', async () => {
     const next = nextLang();
@@ -117,7 +143,8 @@ async function boot() {
   await store.init();
   setLang(store.getSetting('lang') || 'en');
 
-  setupFullpageMode();
+  applyPopupSize(store.getSetting('popupSize') || 'md');
+  setupViewMode();
   renderHeaderIcons();
   applyStatic();
   renderTabs();

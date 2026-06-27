@@ -1,6 +1,13 @@
 /** English locale (default). */
 export default {
   'app.expand': 'Open in full tab',
+  'app.dock': 'Dock to side panel (full height)',
+  'size.title': 'Window size',
+  'size.hint': 'Resize the popup. For a full-height, drag-to-resize panel use the dock button (⬛) in the top bar.',
+  'size.sm': 'Compact',
+  'size.md': 'Standard',
+  'size.lg': 'Wide',
+  'size.xl': 'Max',
   'app.saved': 'Saved',
   'app.deleted': 'Deleted',
   'app.archived': 'Archived',

@@ -63,6 +63,8 @@
 
   /* Typography */
   --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: "SF Mono", "JetBrains Mono", "Cascadia Code", "Roboto Mono", ui-monospace,
+    SFMono-Regular, Menlo, Consolas, monospace;
   --fs-xs: 11px;
   --fs-sm: 12px;
   --fs-md: 13px;

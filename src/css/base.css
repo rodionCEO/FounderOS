@@ -14,8 +14,12 @@ body {
   color: var(--text);
   font-family: var(--font);
   font-size: var(--fs-md);
-  line-height: 1.45;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0.1px;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 /* Deep backdrop with soft violet/blue neon glow in the corners */
@@ -36,6 +40,16 @@ body.fullpage html {
 body.fullpage .app {
   max-width: 760px;
   margin: 0 auto;
+}
+
+/* Side-panel mode: docked on the right, full height, user-resizable width */
+html.sidepanel,
+body.sidepanel {
+  width: 100%;
+  height: 100vh;
+}
+body.sidepanel .app {
+  width: 100%;
 }
 
 .app {
@@ -114,7 +128,7 @@ a:hover {
   filter: drop-shadow(0 0 6px rgba(124, 124, 255, 0.6));
 }
 .topbar__name {
-  font-weight: 700;
+  font-weight: 600;
   font-size: var(--fs-lg);
   letter-spacing: -0.2px;
   background: var(--accent-grad);

@@ -33,7 +33,7 @@
   border: 1px solid var(--border);
   color: var(--text-muted);
   font-size: var(--fs-xs);
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.4px;
   transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
 }
@@ -110,7 +110,7 @@
   gap: 8px;
   margin: var(--space-4) 0 var(--space-3);
   font-size: var(--fs-sm);
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.4px;
   text-transform: uppercase;
   color: var(--text-muted);
@@ -126,7 +126,9 @@
 .section-title__count {
   margin-left: auto;
   color: var(--text-faint);
-  font-weight: 600;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
   text-transform: none;
   letter-spacing: 0;
 }
@@ -482,7 +484,7 @@ body.fullpage .modal {
   border-bottom: 1px solid var(--border);
 }
 .modal__title {
-  font-weight: 700;
+  font-weight: 600;
   font-size: var(--fs-lg);
 }
 .modal__body {
@@ -515,7 +517,7 @@ body.fullpage .modal {
   align-items: center;
   gap: 7px;
   font-size: var(--fs-xs);
-  font-weight: 700;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   color: var(--text-muted);
@@ -571,8 +573,10 @@ body.fullpage .modal {
   border-radius: 6px;
   background-image: var(--accent-grad);
   color: #fff;
+  font-family: var(--font-mono);
   font-size: var(--fs-xs);
-  font-weight: 800;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
   flex-shrink: 0;
 }
 
@@ -586,9 +590,13 @@ body.fullpage .modal {
   flex-direction: column;
 }
 .stat__num {
-  font-size: var(--fs-xl);
-  font-weight: 800;
+  font-family: var(--font-mono);
+  font-size: 21px;
+  font-weight: 500;
+  letter-spacing: -0.5px;
+  font-variant-numeric: tabular-nums;
   line-height: 1.1;
+  color: var(--text);
 }
 .stat__num.alert {
   color: var(--high);
@@ -638,7 +646,7 @@ body.fullpage .modal {
 .journal-date {
   flex: 1;
   text-align: center;
-  font-weight: 700;
+  font-weight: 600;
   font-size: var(--fs-lg);
 }
 .completed-box {
@@ -650,7 +658,7 @@ body.fullpage .modal {
 }
 .completed-box__title {
   font-size: var(--fs-xs);
-  font-weight: 700;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.4px;
   color: var(--success);
@@ -693,7 +701,7 @@ body.fullpage .modal {
 }
 .search-group__type {
   font-size: var(--fs-xs);
-  font-weight: 700;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.4px;
   color: var(--text-faint);
@@ -706,7 +714,7 @@ body.fullpage .modal {
 }
 .settings-section__title {
   font-size: var(--fs-xs);
-  font-weight: 700;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   color: var(--text-muted);
@@ -743,7 +751,7 @@ body.fullpage .modal {
   background: var(--surface-active);
   border: 1px solid var(--border-strong);
   font-size: var(--fs-xs);
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-muted);
 }
 .shortcut-row {
