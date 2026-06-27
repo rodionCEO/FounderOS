@@ -6,6 +6,9 @@ desktop.ini
 .vscode/
 *.swp
 
+# Claude Code local settings
+.claude/
+
 # Logs / temp
 *.log
 *.tmp
