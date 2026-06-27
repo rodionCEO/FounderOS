@@ -58,6 +58,7 @@ body.sidepanel .app {
   width: 100%;
   height: 100%;
   overflow: hidden;
+  position: relative; /* anchor for the slide-down search panel */
 }
 
 button {
@@ -174,17 +175,20 @@ body.fullpage .topbar__name::after {
   display: flex;
   align-items: center;
   gap: var(--space-1);
+  flex-shrink: 0; /* never let actions get squeezed onto the search box */
 }
 
-/* Section tabs */
+/* Section tabs — Liquid Glass segmented rail */
 .tabs {
   display: flex;
-  gap: 2px;
-  padding: var(--space-2) var(--space-3);
-  background: var(--bg-elevated);
+  gap: 3px;
+  margin: var(--space-2) var(--space-3) 0;
+  padding: 4px;
+  background: var(--glass-rail);
   -webkit-backdrop-filter: var(--glass-blur);
   backdrop-filter: var(--glass-blur);
-  border-bottom: 1px solid var(--border);
+  border: 1px solid var(--glass-rail-border);
+  border-radius: var(--radius);
   overflow-x: auto;
   flex-shrink: 0;
   scrollbar-width: none;
@@ -199,7 +203,7 @@ body.fullpage .topbar__name::after {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 10px;
+  padding: 6px 11px;
   border-radius: var(--radius-sm);
   border: 1px solid transparent;
   color: var(--text-muted);
@@ -217,10 +221,10 @@ body.fullpage .topbar__name::after {
   transform: translateY(1px);
 }
 .tab.active {
-  background-image: var(--accent-grad-soft);
-  border-color: rgba(124, 124, 255, 0.4);
+  background-image: var(--glass-pill);
+  border-color: var(--glass-pill-border);
   color: #fff;
-  box-shadow: var(--glow-sm);
+  box-shadow: var(--glass-pill-shadow), var(--glow-sm);
 }
 .tab.active .tab__icon {
   color: var(--accent);
@@ -251,4 +255,15 @@ body.fullpage .topbar__name::after {
 }
 .fade-in {
   animation: fadeIn var(--dur) var(--ease);
+}
+
+/* Compact popup: free up room so the quick-add buttons never crowd the search box */
+@media (max-width: 380px) {
+  .topbar {
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-3);
+  }
+  .topbar__name {
+    display: none;
+  }
 }

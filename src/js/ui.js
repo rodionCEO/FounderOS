@@ -31,6 +31,30 @@ export function actionBtn(action, iconName, titleKey, extraClass = '') {
     data-action="${action}" title="${t(titleKey)}">${icon(iconName)}</button>`;
 }
 
+/**
+ * Save-on-Enter for modal forms. Enter in a single-line <input> submits;
+ * in a <textarea> only Cmd/Ctrl+Enter submits (plain Enter keeps the newline).
+ * Ignores <select> and other elements. Used for Quick Capture and the
+ * task/idea/note/link editors (NOT the journal).
+ */
+export function submitOnEnter(scopeEl, submit) {
+  scopeEl.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' || e.isComposing) return;
+    const tag = e.target.tagName;
+    if (tag === 'TEXTAREA') {
+      if (e.metaKey || e.ctrlKey) {
+        e.preventDefault();
+        submit();
+      }
+    } else if (tag === 'INPUT') {
+      if (!e.shiftKey && !e.metaKey && !e.ctrlKey && !e.altKey) {
+        e.preventDefault();
+        submit();
+      }
+    }
+  });
+}
+
 /** Open a modal with the provided inner markup. Returns the modal element. */
 export function openModal(innerHtml, { onClose } = {}) {
   const root = document.getElementById('modalRoot');

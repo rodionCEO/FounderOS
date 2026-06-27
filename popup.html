@@ -20,7 +20,7 @@
       <div class="topbar__search">
         <span class="topbar__search-icon" id="searchIcon"></span>
         <input type="text" id="globalSearch" class="topbar__search-input"
-               data-i18n-placeholder="search.placeholder" autocomplete="off" />
+               data-i18n-placeholder="search.placeholder" autocomplete="off" readonly />
       </div>
       <div class="topbar__actions">
         <button class="icon-btn" id="quickCaptureBtn" data-i18n-title="quick.title" type="button"></button>
@@ -34,11 +34,27 @@
     <!-- Section navigation -->
     <nav class="tabs" id="tabs"></nav>
 
-    <!-- Search results overlay -->
-    <section id="searchResults" class="search-results" hidden></section>
-
     <!-- Main content -->
     <main id="view" class="view"></main>
+
+    <!-- Slide-down search panel (opened by clicking the top search box) -->
+    <div id="searchPanel" class="search-panel">
+      <div class="search-panel__bar">
+        <div class="search-panel__field">
+          <span class="search-panel__icon" id="searchPanelIcon"></span>
+          <input type="text" id="searchPanelInput" class="search-panel__input"
+                 data-i18n-placeholder="search.placeholder" autocomplete="off" />
+        </div>
+        <button class="btn btn--primary btn--sm" id="searchPanelGo" type="button"
+                data-i18n="search.button"></button>
+        <button class="icon-btn" id="searchPanelClose" type="button"></button>
+      </div>
+      <div class="search-recent" id="searchRecent" hidden>
+        <div class="search-recent__title" data-i18n="search.recent"></div>
+        <div class="search-recent__chips" id="searchRecentChips"></div>
+      </div>
+      <div id="searchResults" class="search-results"></div>
+    </div>
   </div>
 
   <!-- Modal root (Quick Capture, task editor, etc.) -->

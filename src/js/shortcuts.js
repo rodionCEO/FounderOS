@@ -18,6 +18,10 @@ export function initShortcuts({ navigate }) {
     if (isTyping(document.activeElement) || modalOpen()) return;
 
     switch (e.key.toLowerCase()) {
+      case 'q':
+        e.preventDefault();
+        openQuickCapture({ navigate });
+        break;
       case 't':
         e.preventDefault();
         openQuickCapture({ navigate, type: 'task' });

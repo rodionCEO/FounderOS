@@ -3,7 +3,7 @@ import * as store from '../store.js';
 import { t, getLang } from '../i18n.js';
 import { icon } from '../icons.js';
 import { escapeHtml, formatDate } from '../utils.js';
-import { actionBtn, emptyState, toast, openModal, confirmDialog } from '../ui.js';
+import { actionBtn, emptyState, toast, openModal, confirmDialog, submitOnEnter } from '../ui.js';
 import { attachMic, voiceSupported } from '../voice.js';
 
 const SORTS = [
@@ -118,7 +118,7 @@ function openEditor(idea, container) {
   el.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', close));
   el.querySelector('#ie-title').focus();
 
-  el.querySelector('#ie-save').addEventListener('click', async () => {
+  const doSave = async () => {
     const title = el.querySelector('#ie-title').value.trim();
     if (!title) return;
     const patch = { title, desc: el.querySelector('#ie-desc').value.trim() };
@@ -127,5 +127,7 @@ function openEditor(idea, container) {
     close();
     toast(t('app.saved'));
     render(container);
-  });
+  };
+  el.querySelector('#ie-save').addEventListener('click', doSave);
+  submitOnEnter(el, doSave);
 }

@@ -1,18 +1,18 @@
-/** Tasks view: time-grouped, filterable, drag-and-drop reorderable. */
+/** Tasks view: importance filter + group/all views, collapsible deadline groups,
+ *  pin (to top) and Focus Day (max 3) as separate actions, drag-and-drop. */
 import * as store from '../store.js';
 import { t, getLang } from '../i18n.js';
 import { icon } from '../icons.js';
 import { escapeHtml, taskBucket, formatDate, formatTime } from '../utils.js';
-import { actionBtn, emptyState, toast, openModal, confirmDialog, importanceBadge } from '../ui.js';
+import { actionBtn, emptyState, toast, openModal, confirmDialog, importanceBadge, submitOnEnter } from '../ui.js';
 import { attachMic, voiceSupported } from '../voice.js';
+import { deadlineField, wireDeadlineField } from '../deadline.js';
 
-const FILTERS = [
-  { key: 'all', label: 'tasks.filterAll' },
-  { key: 'high', label: 'tasks.high' },
-  { key: 'mid', label: 'tasks.mid' },
-  { key: 'low', label: 'tasks.low' },
-  { key: 'today', label: 'tasks.filterToday' },
-  { key: 'overdue', label: 'tasks.filterOverdue' },
+const IMPORTANCE = [
+  ['all', 'tasks.filterAll'],
+  ['high', 'tasks.high'],
+  ['mid', 'tasks.mid'],
+  ['low', 'tasks.low'],
 ];
 
 const GROUPS = [
@@ -22,14 +22,24 @@ const GROUPS = [
   { key: 'later', label: 'tasks.group.later', icon: 'inbox' },
 ];
 
-let filter = 'all';
+// Which deadline groups start expanded (Overdue + Today). Remembered per-user.
+const GROUP_DEFAULTS = { overdue: true, today: true, tomorrow: false, later: false };
 
-function passesFilter(task) {
-  if (filter === 'all') return true;
-  if (filter === 'high' || filter === 'mid' || filter === 'low') return task.importance === filter;
-  if (filter === 'today') return taskBucket(task) === 'today';
-  if (filter === 'overdue') return taskBucket(task) === 'overdue';
-  return true;
+let importanceFilter = 'all';
+let viewMode = 'grouped'; // 'grouped' | 'all'
+
+function passesImportance(task) {
+  return importanceFilter === 'all' || task.importance === importanceFilter;
+}
+
+/** Pinned tasks float to the top of their group; otherwise keep manual order. */
+function pinnedFirst(a, b) {
+  return (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0) || (a.order ?? 0) - (b.order ?? 0);
+}
+
+function groupExpanded(key) {
+  const tg = store.getUi('taskGroups') || {};
+  return tg[key] ?? GROUP_DEFAULTS[key] ?? false;
 }
 
 function taskCard(task) {
@@ -38,8 +48,8 @@ function taskCard(task) {
   const date = formatDate(task.deadline, lang);
   const overdue = taskBucket(task) === 'overdue';
   return `
-    <div class="card card--task card--${task.importance}${task.focus ? ' pinned' : ''}"
-         data-id="${task.id}" draggable="true">
+    <div class="card card--task card--${task.importance}${task.pinned ? ' pinned' : ''}"
+         data-id="${task.id}" draggable="${viewMode === 'grouped'}">
       <div class="card__head">
         <span class="drag-handle" title="">${dragDots()}</span>
         <div style="flex:1;min-width:0">
@@ -58,7 +68,8 @@ function taskCard(task) {
           </div>
         </div>
         <div class="card__actions">
-          ${actionBtn('focus', 'star', task.focus ? 'action.unpin' : 'dash.focus', task.focus ? 'icon-btn--accent' : '')}
+          ${actionBtn('pin', 'pin', task.pinned ? 'action.unpin' : 'action.pin', task.pinned ? 'icon-btn--accent' : '')}
+          ${actionBtn('focus', 'star', task.focus ? 'tasks.focusRemove' : 'tasks.focusAdd', task.focus ? 'icon-btn--accent' : '')}
           ${actionBtn('complete', 'checkCircle', 'action.complete')}
           ${actionBtn('edit', 'edit', 'action.edit')}
           ${actionBtn('archive', 'archiveBox', 'action.archive')}
@@ -75,48 +86,101 @@ function dragDots() {
 export default function render(container) {
   const active = store
     .all('tasks')
-    .filter((tk) => !tk.archived && !tk.done && passesFilter(tk))
-    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+    .filter((tk) => !tk.archived && !tk.done && passesImportance(tk));
 
-  const chips = FILTERS.map(
-    (f) => `<button class="chip${filter === f.key ? ' active' : ''}" data-filter="${f.key}">${t(f.label)}</button>`
+  const impSeg = IMPORTANCE.map(
+    ([k, l]) =>
+      `<button class="type-switch__btn${importanceFilter === k ? ' active' : ''}" data-imp="${k}">${t(l)}</button>`
   ).join('');
+  const viewSeg = [
+    ['grouped', 'tasks.viewGrouped'],
+    ['all', 'tasks.viewAll'],
+  ]
+    .map(
+      ([k, l]) =>
+        `<button class="type-switch__btn${viewMode === k ? ' active' : ''}" data-view="${k}">${t(l)}</button>`
+    )
+    .join('');
 
-  const groupsHtml = GROUPS.map((g) => {
-    const items = active.filter((tk) => taskBucket(tk) === g.key);
-    return `
-      <div class="section-title${g.accent ? '' : ''}">
-        <span class="section-title__icon${g.accent ? ' section-title__accent' : ''}">${icon(g.icon, { size: 15 })}</span>
-        ${t(g.label)}
-        <span class="section-title__count">${items.length}</span>
+  const filterBar = `
+    <div class="filter-bar">
+      <div class="filter-bar__row">
+        <span class="filter-bar__label">${t('tasks.importanceLabel')}</span>
+        <div class="type-switch">${impSeg}</div>
       </div>
-      <div class="task-list" data-group="${g.key}">
-        ${items.length ? items.map(taskCard).join('') : emptyState('check', t('tasks.groupEmpty'), '', true)}
-      </div>`;
-  }).join('');
+      <div class="filter-bar__row">
+        <span class="filter-bar__label">${t('tasks.view')}</span>
+        <div class="type-switch">${viewSeg}</div>
+        <button class="btn btn--primary btn--sm" id="newTask">${icon('plus', { size: 14 })} ${t('tasks.new')}</button>
+      </div>
+    </div>`;
 
   const totalActive = store.all('tasks').filter((tk) => !tk.archived && !tk.done).length;
 
-  container.innerHTML = `
-    <div class="view-head" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:8px">
-      <div class="chips" style="margin:0">${chips}</div>
-      <button class="btn btn--primary btn--sm" id="newTask">${icon('plus', { size: 14 })} ${t('tasks.new')}</button>
-    </div>
-    ${totalActive === 0 && filter === 'all'
-      ? emptyState('tasks', t('tasks.empty'), t('tasks.emptyHint'))
-      : groupsHtml}
-  `;
+  let body;
+  if (totalActive === 0) {
+    body = emptyState('tasks', t('tasks.empty'), t('tasks.emptyHint'));
+  } else if (viewMode === 'all') {
+    // Flat list: pinned first, then newest added.
+    const flat = active
+      .slice()
+      .sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0) || (b.createdAt || 0) - (a.createdAt || 0));
+    body = flat.length
+      ? `<div class="task-list" data-group="all">${flat.map(taskCard).join('')}</div>`
+      : emptyState('tasks', t('tasks.allEmpty'), '', true);
+  } else {
+    body = GROUPS.map((g) => {
+      const items = active.filter((tk) => taskBucket(tk) === g.key).sort(pinnedFirst);
+      const expanded = groupExpanded(g.key);
+      return `
+        <div class="task-group${expanded ? '' : ' collapsed'}" data-group="${g.key}">
+          <button class="task-group__head" data-toggle="${g.key}" type="button">
+            <span class="task-group__chevron">${icon('chevronDown', { size: 16 })}</span>
+            <span class="task-group__icon${g.accent ? ' accent' : ''}">${icon(g.icon, { size: 15 })}</span>
+            ${t(g.label)}
+            <span class="task-group__count">${items.length}</span>
+          </button>
+          <div class="task-group__body">
+            <div class="task-group__inner">
+              <div class="task-list" data-group="${g.key}">
+                ${items.length ? items.map(taskCard).join('') : emptyState('check', t('tasks.groupEmpty'), '', true)}
+              </div>
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+  }
 
-  container.querySelectorAll('.chip').forEach((c) =>
-    c.addEventListener('click', () => {
-      filter = c.dataset.filter;
+  container.innerHTML = `${filterBar}${body}`;
+
+  container.querySelectorAll('[data-imp]').forEach((b) =>
+    b.addEventListener('click', () => {
+      importanceFilter = b.dataset.imp;
+      render(container);
+    })
+  );
+  container.querySelectorAll('[data-view]').forEach((b) =>
+    b.addEventListener('click', () => {
+      viewMode = b.dataset.view;
       render(container);
     })
   );
   container.querySelector('#newTask').addEventListener('click', () => openEditor(null, container));
 
+  // Collapse / expand groups — animate in place and remember the choice.
+  container.querySelectorAll('[data-toggle]').forEach((head) =>
+    head.addEventListener('click', () => {
+      const key = head.dataset.toggle;
+      const groupEl = head.closest('.task-group');
+      const collapsed = groupEl.classList.toggle('collapsed');
+      const tg = { ...GROUP_DEFAULTS, ...(store.getUi('taskGroups') || {}) };
+      tg[key] = !collapsed;
+      store.setUi('taskGroups', tg);
+    })
+  );
+
   wireCardActions(container);
-  wireDragDrop(container);
+  if (viewMode === 'grouped') wireDragDrop(container);
 }
 
 function wireCardActions(container) {
@@ -127,7 +191,6 @@ function wireCardActions(container) {
         e.stopPropagation();
         const action = btn.dataset.action;
         if (action === 'complete') {
-          // Play the completion flourish, then move the task to the Completed view.
           card.classList.add('card--completing');
           setTimeout(async () => {
             await store.completeTask(id);
@@ -146,6 +209,8 @@ function wireCardActions(container) {
             card.classList.add('card--removing');
             setTimeout(() => store.remove('tasks', id), 220);
           }
+        } else if (action === 'pin') {
+          await store.togglePin('tasks', id);
         } else if (action === 'focus') {
           const res = await store.toggleFocus(id);
           if (res && res.error === 'focusLimit') toast(t('tasks.focusLimit'));
@@ -168,7 +233,7 @@ function wireDragDrop(container) {
     card.addEventListener('dragend', () => {
       card.classList.remove('dragging');
       container.querySelectorAll('.drag-over').forEach((el) => el.classList.remove('drag-over'));
-      persistOrder(container);
+      persistOrder();
     });
     card.addEventListener('dragover', (e) => {
       e.preventDefault();
@@ -201,7 +266,6 @@ function wireDragDrop(container) {
 /** Create / edit a task in a modal. */
 function openEditor(task, container) {
   const isEdit = Boolean(task);
-  const dl = task && task.deadline ? toDateInput(task.deadline) : '';
   const { el, close } = openModal(`
     <div class="modal__head">
       <span class="modal__title">${isEdit ? t('action.edit') : t('tasks.new')}</span>
@@ -216,19 +280,17 @@ function openEditor(task, container) {
         <label class="field__label">${t('tasks.desc')}</label>
         <div class="input-with-mic"><textarea class="textarea" id="te-desc">${task ? escapeHtml(task.desc || '') : ''}</textarea></div>
       </div>
-      <div class="form-row">
-        <div class="field">
-          <label class="field__label">${t('tasks.importance')}</label>
-          <select class="select" id="te-importance">
-            <option value="high"${imp(task, 'high')}>${t('tasks.high')}</option>
-            <option value="mid"${imp(task, 'mid')}>${t('tasks.mid')}</option>
-            <option value="low"${imp(task, 'low')}>${t('tasks.low')}</option>
-          </select>
-        </div>
-        <div class="field">
-          <label class="field__label">${t('tasks.deadline')}</label>
-          <input class="input" type="datetime-local" id="te-deadline" value="${dl}" />
-        </div>
+      <div class="field">
+        <label class="field__label">${t('tasks.importance')}</label>
+        <select class="select" id="te-importance">
+          <option value="high"${imp(task, 'high')}>${t('tasks.high')}</option>
+          <option value="mid"${imp(task, 'mid')}>${t('tasks.mid')}</option>
+          <option value="low"${imp(task, 'low')}>${t('tasks.low')}</option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="field__label">${t('tasks.deadline')}</label>
+        ${deadlineField({ value: task && task.deadline ? task.deadline : null, withTime: true })}
       </div>
       <div class="form-actions">
         <button class="btn btn--ghost" data-close>${t('action.cancel')}</button>
@@ -239,36 +301,30 @@ function openEditor(task, container) {
 
   if (voiceSupported()) el.querySelectorAll('.input-with-mic').forEach(attachMic);
   el.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', close));
+  const deadline = wireDeadlineField(el, { withTime: true });
   el.querySelector('#te-title').focus();
 
-  el.querySelector('#te-save').addEventListener('click', async () => {
+  const doSave = async () => {
     const title = el.querySelector('#te-title').value.trim();
     if (!title) return;
     const patch = {
       title,
       desc: el.querySelector('#te-desc').value.trim(),
       importance: el.querySelector('#te-importance').value,
-      deadline: el.querySelector('#te-deadline').value
-        ? new Date(el.querySelector('#te-deadline').value).getTime()
-        : null,
+      deadline: deadline.getValue(),
     };
     if (isEdit) await store.update('tasks', task.id, patch);
     else await store.add('tasks', patch);
     close();
     toast(t('app.saved'));
     render(container);
-  });
+  };
+
+  el.querySelector('#te-save').addEventListener('click', doSave);
+  submitOnEnter(el, doSave);
 }
 
 function imp(task, level) {
   const cur = task ? task.importance : 'mid';
   return cur === level ? ' selected' : '';
-}
-
-function toDateInput(ts) {
-  const d = new Date(ts);
-  const pad = (n) => String(n).padStart(2, '0');
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(
-    d.getMinutes()
-  )}`;
 }

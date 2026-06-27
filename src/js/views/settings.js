@@ -14,6 +14,7 @@ const SIZE_OPTS = [
 ];
 
 const SHORTCUTS = [
+  ['q', 'sc.quickCapture'],
   ['t', 'sc.newTask'],
   ['i', 'sc.newIdea'],
   ['n', 'sc.newNote'],

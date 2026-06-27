@@ -7,6 +7,7 @@ import { uid } from './utils.js';
 
 const DATA_KEY = 'founderos';
 const DRAFTS_KEY = 'founderos_drafts';
+const UI_KEY = 'founderos_ui';
 const SCHEMA_VERSION = 1;
 
 const DEFAULT_DATA = {
@@ -21,8 +22,20 @@ const DEFAULT_DATA = {
 
 const DEFAULT_DRAFTS = { note: null, journal: {}, quick: null };
 
+/**
+ * Lightweight, view-only UI state. Kept in its own storage key so it never
+ * touches the core data model (export/import, schema) and changes never trigger
+ * a data re-render. Used for things like which task groups are expanded and the
+ * recent-search history.
+ */
+const DEFAULT_UI = {
+  taskGroups: { overdue: true, today: true, tomorrow: false, later: false },
+  recentSearches: [],
+};
+
 let state = structuredClone(DEFAULT_DATA);
 let drafts = structuredClone(DEFAULT_DRAFTS);
+let ui = structuredClone(DEFAULT_UI);
 const listeners = new Set();
 
 /** Promise wrapper around chrome.storage.local.get. */
@@ -36,7 +49,7 @@ function rawSet(obj) {
 
 /** Load both data and drafts from storage into memory. Call once on boot. */
 export async function init() {
-  const res = await rawGet([DATA_KEY, DRAFTS_KEY]);
+  const res = await rawGet([DATA_KEY, DRAFTS_KEY, UI_KEY]);
   if (res[DATA_KEY]) {
     state = { ...structuredClone(DEFAULT_DATA), ...res[DATA_KEY] };
   } else {
@@ -44,6 +57,9 @@ export async function init() {
   }
   if (res[DRAFTS_KEY]) {
     drafts = { ...structuredClone(DEFAULT_DRAFTS), ...res[DRAFTS_KEY] };
+  }
+  if (res[UI_KEY]) {
+    ui = { ...structuredClone(DEFAULT_UI), ...res[UI_KEY] };
   }
 }
 
@@ -78,6 +94,25 @@ export async function setSetting(key, value) {
   await persist();
 }
 
+/* ---------- UI state (view-only, no re-render) ---------- */
+/** Read a UI-state value (or the whole object when called without a key). */
+export function getUi(key) {
+  return key ? ui[key] : ui;
+}
+/** Persist a UI-state value WITHOUT notifying data listeners (no re-render). */
+export async function setUi(key, value) {
+  ui[key] = value;
+  await rawSet({ [UI_KEY]: ui });
+}
+/** Push a query onto the recent-search history (deduped, newest first, max 5). */
+export async function addRecentSearch(query) {
+  const q = String(query || '').trim();
+  if (!q) return;
+  const prev = (ui.recentSearches || []).filter((x) => x.toLowerCase() !== q.toLowerCase());
+  ui.recentSearches = [q, ...prev].slice(0, 5);
+  await rawSet({ [UI_KEY]: ui });
+}
+
 /* ---------- Generic CRUD for tasks/ideas/notes/links ---------- */
 export async function add(collection, item) {
   const now = Date.now();
@@ -91,6 +126,7 @@ export async function add(collection, item) {
     record.order = state.tasks.length;
     record.done = record.done || false;
     record.focus = record.focus || false;
+    record.pinned = record.pinned || false;
     record.completedAt = null;
   }
   if (collection === 'notes') record.updatedAt = now;
@@ -175,6 +211,15 @@ export async function reorderTasks(orderedIds) {
 /* ---------- Journal ---------- */
 export function getJournalEntry(date) {
   return state.journal.find((e) => e.date === date) || null;
+}
+
+/** Dates of journal drafts that hold non-empty content (autosaved, not yet committed). */
+export function journalDraftDates() {
+  return Object.keys(drafts.journal || {}).filter((date) => {
+    const d = drafts.journal[date];
+    if (!d) return false;
+    return Object.entries(d).some(([k, v]) => k !== 'ts' && String(v || '').trim());
+  });
 }
 
 export async function saveJournalEntry(date, fields) {

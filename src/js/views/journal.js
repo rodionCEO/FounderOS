@@ -7,7 +7,7 @@ import * as store from '../store.js';
 import { t, getLang } from '../i18n.js';
 import { icon } from '../icons.js';
 import { escapeHtml, dateKey, parseDateKey, formatFullDate, formatDate, isToday } from '../utils.js';
-import { toast } from '../ui.js';
+import { toast, emptyState } from '../ui.js';
 import { attachMic, voiceSupported } from '../voice.js';
 import { createAutosave } from '../drafts.js';
 
@@ -84,7 +84,7 @@ export default function render(container) {
             )}</button>`
         )
         .join('')
-    : `<span class="empty__hint">${t('journal.noRecent')}</span>`;
+    : emptyState('journal', t('journal.empty'), t('journal.emptyHint'), true);
 
   container.innerHTML = `
     <div class="journal-nav">

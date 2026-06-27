@@ -3,7 +3,7 @@ import * as store from '../store.js';
 import { t, getLang } from '../i18n.js';
 import { icon } from '../icons.js';
 import { escapeHtml, formatDate } from '../utils.js';
-import { actionBtn, emptyState, toast, openModal, confirmDialog } from '../ui.js';
+import { actionBtn, emptyState, toast, openModal, confirmDialog, submitOnEnter } from '../ui.js';
 import { attachMic, voiceSupported } from '../voice.js';
 import { createAutosave } from '../drafts.js';
 
@@ -150,7 +150,7 @@ function openEditor(note, container) {
   );
   el.querySelector('#ne-title').focus();
 
-  el.querySelector('#ne-save').addEventListener('click', async () => {
+  const doSave = async () => {
     const title = el.querySelector('#ne-title').value.trim();
     const text = el.querySelector('#ne-text').value.trim();
     if (!title && !text) return;
@@ -160,5 +160,7 @@ function openEditor(note, container) {
     close();
     toast(t('app.saved'));
     render(container);
-  });
+  };
+  el.querySelector('#ne-save').addEventListener('click', doSave);
+  submitOnEnter(el, doSave);
 }

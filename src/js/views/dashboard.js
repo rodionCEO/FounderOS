@@ -28,9 +28,15 @@ function journalStreak() {
 }
 
 function lastEntryLabel(lang) {
-  const entries = store.all('journal');
-  if (!entries.length) return t('dash.never');
-  const last = entries[0].date; // journal is kept date-desc
+  // Real "last entry" = newest of committed journal entries AND non-empty drafts
+  // (so a day you typed but didn't press Save still counts). Dates are
+  // 'YYYY-MM-DD', so a lexicographic max gives the most recent one.
+  const dates = [
+    ...store.all('journal').map((e) => e.date),
+    ...store.journalDraftDates(),
+  ].filter(Boolean);
+  if (!dates.length) return t('dash.never');
+  const last = dates.reduce((a, b) => (a > b ? a : b));
   const rel = relativeDayKey(parseDateKey(last).getTime());
   if (rel === 'today') return t('journal.today');
   if (rel === 'yesterday') return getLang() === 'ru' ? 'вчера' : 'yesterday';
@@ -55,10 +61,12 @@ export default function render(container, { navigate } = {}) {
   const notes = store.all('notes').filter((x) => !x.archived).slice(0, 3);
   const streak = journalStreak();
 
-  // Today's Focus
+  // Focus Day (up to 3 starred tasks) — distinct from Pin
   const focusWidget = `
     <div class="widget widget--full">
-      <div class="widget__title">${icon('star', { size: 14 })} ${t('dash.focus')}</div>
+      <div class="widget__title">${icon('star', { size: 14 })} ${t('dash.focus')}
+        <span style="margin-left:auto;color:var(--text-faint);font-family:var(--font-mono);font-size:var(--fs-xs)">${focus.length}/3</span>
+      </div>
       ${
         focus.length
           ? `<div class="focus-list">${focus
@@ -85,9 +93,9 @@ export default function render(container, { navigate } = {}) {
     </div>`;
 
   const todayTasksWidget = `
-    <div class="widget">
+    <div class="widget" data-go="tasks">
       <div class="widget__title">${icon('tasks', { size: 14 })} ${t('dash.todayTasks')}
-        <span class="widget__link" data-go="tasks">${icon('chevronRight', { size: 13 })}</span>
+        <span class="widget__link" data-go="tasks">${icon('chevronRight', { size: 16 })}</span>
       </div>
       ${
         todays.length
@@ -97,25 +105,25 @@ export default function render(container, { navigate } = {}) {
     </div>`;
 
   const ideasWidget = `
-    <div class="widget">
+    <div class="widget" data-go="ideas">
       <div class="widget__title">${icon('idea', { size: 14 })} ${t('dash.recentIdeas')}
-        <span class="widget__link" data-go="ideas">${icon('chevronRight', { size: 13 })}</span>
+        <span class="widget__link" data-go="ideas">${icon('chevronRight', { size: 16 })}</span>
       </div>
       ${ideas.length ? ideas.map((i) => line(i.title, '', 'ideas')).join('') : emptyState('idea', t('ideas.empty'), '', true)}
     </div>`;
 
   const notesWidget = `
-    <div class="widget">
+    <div class="widget" data-go="notes">
       <div class="widget__title">${icon('note', { size: 14 })} ${t('dash.recentNotes')}
-        <span class="widget__link" data-go="notes">${icon('chevronRight', { size: 13 })}</span>
+        <span class="widget__link" data-go="notes">${icon('chevronRight', { size: 16 })}</span>
       </div>
       ${notes.length ? notes.map((n) => line(n.title || n.text, '', 'notes')).join('') : emptyState('note', t('notes.empty'), '', true)}
     </div>`;
 
   const journalWidget = `
-    <div class="widget">
+    <div class="widget" data-go="journal">
       <div class="widget__title">${icon('journal', { size: 14 })} ${t('dash.journal')}
-        <span class="widget__link" data-go="journal">${icon('chevronRight', { size: 13 })}</span>
+        <span class="widget__link" data-go="journal">${icon('chevronRight', { size: 16 })}</span>
       </div>
       <div class="stat" style="margin-bottom:8px">
         <span class="stat__num">${streak}</span>

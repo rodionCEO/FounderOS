@@ -6,10 +6,11 @@
 import * as store from './store.js';
 import { t } from './i18n.js';
 import { icon } from './icons.js';
-import { openModal, toast } from './ui.js';
+import { openModal, toast, submitOnEnter } from './ui.js';
 import { attachMic, voiceSupported } from './voice.js';
 import { createAutosave } from './drafts.js';
 import { normalizeUrl } from './utils.js';
+import { deadlineField, wireDeadlineField } from './deadline.js';
 
 const TYPES = ['task', 'idea', 'note', 'link'];
 
@@ -41,17 +42,16 @@ function fieldsMarkup(type) {
   if (type === 'task') {
     return (
       mic('qc-title', t('tasks.title')) +
-      `<div class="form-row">
-        <div class="field">
-          <select class="select" id="qc-importance">
-            <option value="high">${t('tasks.high')}</option>
-            <option value="mid" selected>${t('tasks.mid')}</option>
-            <option value="low">${t('tasks.low')}</option>
-          </select>
-        </div>
-        <div class="field">
-          <input class="input" type="date" id="qc-deadline" />
-        </div>
+      `<div class="field">
+        <select class="select" id="qc-importance">
+          <option value="high">${t('tasks.high')}</option>
+          <option value="mid" selected>${t('tasks.mid')}</option>
+          <option value="low">${t('tasks.low')}</option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="field__label">${t('tasks.deadline')}</label>
+        ${deadlineField({ withTime: false, inputId: 'qc-deadline' })}
       </div>`
     );
   }
@@ -137,6 +137,7 @@ export function openQuickCapture({ navigate, type } = {}) {
       fieldsEl.querySelectorAll('.input-with-mic').forEach(attachMic);
     }
     applyDraftValues();
+    if (activeType === 'task') wireDeadlineField(fieldsEl, { withTime: false });
     fieldsEl.addEventListener('input', () => autosave.schedule());
 
     if (activeType === 'link') {
@@ -170,14 +171,16 @@ export function openQuickCapture({ navigate, type } = {}) {
     })
   );
 
-  el.querySelector('#qc-save').addEventListener('click', async () => {
+  const doSave = async () => {
     const ok = await save(activeType, collectFields());
     if (!ok) return;
     autosave.clear();
     close();
     toast(t('app.saved'));
     if (navigate) navigate(pluralOf(activeType));
-  });
+  };
+  el.querySelector('#qc-save').addEventListener('click', doSave);
+  submitOnEnter(el, doSave);
 
   if (draft && draft.type === activeType) toast(t('quick.draftRestored'));
   mountFields();

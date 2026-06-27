@@ -14,6 +14,14 @@
   /* Glass effect */
   --glass-blur: blur(16px) saturate(140%);
 
+  /* Liquid Glass — segmented controls (tabs, type switch, filters) */
+  --glass-rail: rgba(255, 255, 255, 0.04);
+  --glass-rail-border: rgba(255, 255, 255, 0.08);
+  --glass-pill: linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.05));
+  --glass-pill-border: rgba(255, 255, 255, 0.30);
+  --glass-pill-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.18);
+
   /* Text */
   --text: #eceef6;
   --text-muted: #a2a8bc;

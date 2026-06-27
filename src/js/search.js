@@ -1,13 +1,13 @@
 /**
  * Global search across tasks, ideas, notes, links and journal entries.
- * Results render in an overlay grouped by type; clicking a result jumps to its
- * section. Searching is debounced and case-insensitive.
+ * Clicking the top search box opens a slide-down panel; the user types freely
+ * and results appear only on Enter or the Search button (no per-keystroke
+ * jumping). Recent queries are remembered and offered when the panel opens.
  */
 import * as store from './store.js';
-import { t } from './i18n.js';
+import { t, getLang } from './i18n.js';
 import { icon } from './icons.js';
-import { escapeHtml, debounce, formatDate } from './utils.js';
-import { getLang } from './i18n.js';
+import { escapeHtml, formatDate } from './utils.js';
 import { emptyState } from './ui.js';
 
 const GROUPS = [
@@ -29,31 +29,90 @@ function matches(item, fields, q) {
 }
 
 export function initSearch({ navigate }) {
-  const input = document.getElementById('globalSearch');
+  const trigger = document.getElementById('globalSearch');
+  const panel = document.getElementById('searchPanel');
+  const input = document.getElementById('searchPanelInput');
+  const goBtn = document.getElementById('searchPanelGo');
+  const closeBtn = document.getElementById('searchPanelClose');
+  const recentBox = document.getElementById('searchRecent');
+  const recentChips = document.getElementById('searchRecentChips');
   const results = document.getElementById('searchResults');
 
-  const run = debounce(() => {
-    const q = input.value.trim().toLowerCase();
-    if (!q) {
-      results.hidden = true;
-      results.innerHTML = '';
+  document.getElementById('searchPanelIcon').innerHTML = icon('search', { size: 16 });
+  closeBtn.innerHTML = icon('x');
+
+  function renderRecent() {
+    const recent = store.getUi('recentSearches') || [];
+    if (!recent.length) {
+      recentBox.hidden = true;
       return;
     }
-    renderResults(q, results, navigate);
-  }, 160);
+    recentChips.innerHTML = recent
+      .map((q) => `<button class="chip" data-recent="${escapeHtml(q)}">${escapeHtml(q)}</button>`)
+      .join('');
+    recentBox.hidden = false;
+    recentChips.querySelectorAll('[data-recent]').forEach((c) =>
+      c.addEventListener('click', () => {
+        input.value = c.dataset.recent;
+        runSearch();
+      })
+    );
+  }
 
-  input.addEventListener('input', run);
-  input.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-      input.value = '';
-      results.hidden = true;
+  function onOutside(e) {
+    if (!panel.contains(e.target) && e.target !== trigger) close();
+  }
+
+  function open() {
+    if (panel.classList.contains('open')) return;
+    panel.classList.add('open');
+    results.innerHTML = '';
+    renderRecent();
+    requestAnimationFrame(() => input.focus());
+    document.addEventListener('mousedown', onOutside, true);
+  }
+
+  function close() {
+    if (!panel.classList.contains('open')) return;
+    panel.classList.remove('open');
+    input.value = '';
+    results.innerHTML = '';
+    recentBox.hidden = true;
+    trigger.blur();
+    document.removeEventListener('mousedown', onOutside, true);
+  }
+
+  async function runSearch() {
+    const raw = input.value.trim();
+    if (!raw) {
       results.innerHTML = '';
-      input.blur();
+      renderRecent();
+      return;
+    }
+    recentBox.hidden = true;
+    renderResults(raw.toLowerCase(), results, navigate, close);
+    await store.addRecentSearch(raw);
+  }
+
+  // The top box is a readonly trigger — focusing/clicking it opens the panel.
+  trigger.addEventListener('focus', open);
+  trigger.addEventListener('click', open);
+
+  goBtn.addEventListener('click', runSearch);
+  closeBtn.addEventListener('click', close);
+
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      runSearch();
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      close();
     }
   });
 }
 
-function renderResults(q, container, navigate) {
+function renderResults(q, container, navigate, close) {
   let html = '';
   let total = 0;
 
@@ -80,16 +139,12 @@ function renderResults(q, container, navigate) {
     html += `</div>`;
   }
 
-  container.innerHTML = total
-    ? html
-    : emptyState('search', t('search.empty'), '', true);
-  container.hidden = false;
+  container.innerHTML = total ? html : emptyState('search', t('search.empty'), '', true);
 
   container.querySelectorAll('[data-go]').forEach((el) => {
     el.addEventListener('click', () => {
-      container.hidden = true;
-      document.getElementById('globalSearch').value = '';
       navigate(el.dataset.go);
+      close();
     });
   });
 }

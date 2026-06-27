@@ -3,7 +3,7 @@ import * as store from '../store.js';
 import { t } from '../i18n.js';
 import { icon } from '../icons.js';
 import { escapeHtml, normalizeUrl, hostname } from '../utils.js';
-import { actionBtn, emptyState, toast, openModal, confirmDialog } from '../ui.js';
+import { actionBtn, emptyState, toast, openModal, confirmDialog, submitOnEnter } from '../ui.js';
 import { attachMic, voiceSupported } from '../voice.js';
 
 function getActiveTab() {
@@ -134,7 +134,7 @@ function openEditor(link, container, prefillOnly = false) {
   el.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', close));
   el.querySelector(prefillOnly ? '#le-desc' : '#le-url').focus();
 
-  el.querySelector('#le-save').addEventListener('click', async () => {
+  const doSave = async () => {
     const url = el.querySelector('#le-url').value.trim();
     if (!url) return;
     const patch = {
@@ -147,5 +147,7 @@ function openEditor(link, container, prefillOnly = false) {
     close();
     toast(t('app.saved'));
     render(container);
-  });
+  };
+  el.querySelector('#le-save').addEventListener('click', doSave);
+  submitOnEnter(el, doSave);
 }
