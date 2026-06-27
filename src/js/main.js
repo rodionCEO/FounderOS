@@ -90,6 +90,7 @@ function setupViewMode() {
   const dockBtn = document.getElementById('dockBtn');
 
   if (mode === 'full') {
+    document.documentElement.classList.add('fullpage');
     document.body.classList.add('fullpage');
     document.getElementById('expandBtn').style.display = 'none';
   } else if (mode === 'side') {

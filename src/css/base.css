@@ -31,8 +31,8 @@ body {
 }
 
 /* Full-tab mode: the page is opened in a browser tab, not a popup */
-body.fullpage,
-body.fullpage html {
+html.fullpage,
+body.fullpage {
   width: 100%;
   height: 100vh;
 }
